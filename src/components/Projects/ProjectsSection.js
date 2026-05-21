@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import FilterButtons from './FilterButtons';
 import ProjectCard from './ProjectCard';
 
 const ProjectsSection = memo(({ activeFilter, onFilterClick, onLoadMore }) => {

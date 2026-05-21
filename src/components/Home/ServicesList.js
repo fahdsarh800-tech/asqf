@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 
 const ServiceCard = memo(({ service, index }) => {
-  const { t, language } = useLanguage();
   
   return (
     <div className="bg-white overflow-hidden service-card"
@@ -41,7 +40,7 @@ const ServiceCard = memo(({ service, index }) => {
 ServiceCard.displayName = 'ServiceCard';
 
 const ServicesList = memo(() => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   
   const services = [
     {

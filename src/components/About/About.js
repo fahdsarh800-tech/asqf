@@ -1,5 +1,4 @@
 import React from 'react';
-import { useLanguage } from '../../context/LanguageContext';
 import { useAOS } from '../../hooks/useAOS';
 import { useTeamSwiper } from '../../hooks/useTeamSwiper';
 import { usePartnersSwiper } from '../../hooks/usePartnersSwiper';
@@ -16,8 +15,6 @@ import CertificatesSection from './CertificatesSection';
 import CTASection from './CTASection';
 
 const About = () => {
-  const { t } = useLanguage();
-  
   // استخدام custom hooks
   useAOS();
   useTeamSwiper();

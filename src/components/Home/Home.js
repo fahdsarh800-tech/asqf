@@ -1,5 +1,4 @@
 import React from 'react';
-import { useLanguage } from '../../context/LanguageContext';
 import { useAOS } from '../../hooks/useAOS';
 import { useSwiper } from '../../hooks/useSwiper';
 import { useScrollProgress } from '../../hooks/useScrollProgress';

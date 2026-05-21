@@ -66,7 +66,7 @@ const PartnerLogo = ({ src, alt }) => (
 );
 
 const CertificatesSection = memo(() => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <section id="partners" style={{ backgroundColor: '#fff', padding: '80px 0' }}>

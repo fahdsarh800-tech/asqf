@@ -3,7 +3,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import ProjectsList from './ProjectsList';
 
 const ProjectsSection = memo(() => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <section id="projects" style={{ backgroundColor: '#000', padding: '96px 0' }}>

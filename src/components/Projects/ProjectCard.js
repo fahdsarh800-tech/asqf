@@ -1,8 +1,6 @@
 import React, { memo } from 'react';
-import { useLanguage } from '../../context/LanguageContext';
 
 const ProjectCard = memo(({ project, activeFilter, language }) => {
-  const { t } = useLanguage();
   
   const isVisible = activeFilter === 'all' || activeFilter === project.category;
   const className = `project-card project-item ${isVisible ? '' : 'hidden'}`;

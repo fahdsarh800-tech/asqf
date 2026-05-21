@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 
 const CTASection = memo(() => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <section id="cta" className="cta-section">

@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useLanguage } from '../../context/LanguageContext';
+import React from 'react';
 import { useAOS } from '../../hooks/useAOS';
 import { useShapesEffect } from '../../hooks/useShapesEffect';
 import { useMobileEnhancements } from '../../hooks/useMobileEnhancements';
@@ -11,50 +10,10 @@ import HeroSection from './HeroSection';
 import ContactInfoSection from './ContactInfoSection';
 
 const Contact = () => {
-  const { t, language } = useLanguage();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
-  });
-
   // استخدام custom hooks
   useAOS();
   useShapesEffect();
   useMobileEnhancements();
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // محاكاة إرسال النموذج
-    showNotification(t('messageSentSuccess'), 'success');
-    
-    // إعادة تعيين النموذج
-    setTimeout(() => {
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-      });
-    }, 2000);
-  };
-
-  const showNotification = (message, type) => {
-    // سنقوم بتنفيذ هذا في مكون Notification
-    console.log(message, type);
-  };
 
   return (
     <>
