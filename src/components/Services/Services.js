@@ -1,5 +1,4 @@
 import React from 'react';
-import { useLanguage } from '../../context/LanguageContext';
 import { useAOS } from '../../hooks/useAOS';
 import { useServicesSwiper } from '../../hooks/useServicesSwiper';
 import { useScrollEffects } from '../../hooks/useScrollEffects';
@@ -14,8 +13,6 @@ import WorkProcessSection from './WorkProcessSection';
 import CTASection from './CTASection';
 
 const Services = () => {
-  const { t } = useLanguage();
-  
   // استخدام custom hooks
   useAOS();
   useServicesSwiper();

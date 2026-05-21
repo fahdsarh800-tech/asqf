@@ -1,7 +1,6 @@
 import React, { memo } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import ProcessStep from './ProcessStep';
-import ProgressIndicator from './ProgressIndicator';
 
 const WorkProcessSection = memo(() => {
   const { t, language } = useLanguage();
@@ -30,20 +29,6 @@ const WorkProcessSection = memo(() => {
       title: t('step4Title'),
       description: t('step4Description'),
       icon: 'fa-check-circle'
-    }
-  ];
-
-  const progressItems = [
-    {
-      label: t('executionSpeed'),
-      value: t('executionSpeedValue'),
-      direction: 'right'
-    },
-    {
-      label: t('qualityExecution'),
-      value: t('qualityExecutionValue'),
-      direction: 'left',
-      delay: 200
     }
   ];
 

@@ -1,8 +1,6 @@
 import React, { memo } from 'react';
-import { useLanguage } from '../../context/LanguageContext';
 
 const DetailedServiceCard = memo(({ service, index, language }) => {
-  const { t } = useLanguage();
 
   return (
     <div 
