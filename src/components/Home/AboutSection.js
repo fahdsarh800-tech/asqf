@@ -1,5 +1,4 @@
-import React, { memo, useState } from 'react';
-import Marquee from 'react-fast-marquee';
+import React, { memo, useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 
 const CLIENT_LOGOS = [
@@ -19,56 +18,98 @@ const CLIENT_LOGOS = [
   { src: '/images/clients/middle-east.png', alt: 'ميدل بيست' },
 ];
 
-const StatCard = ({ value, label, isActive, onClick }) => (
-  <div
-    onClick={onClick}
-    data-aos="fade-up"
-    style={{
-      width: '180px',
-      height: '180px',
-      border: `1px solid ${isActive ? '#888888' : '#e0e0e0'}`,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      margin: '12px',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease',
-      backgroundColor: isActive ? '#f8f8f8' : '#fff',
-    }}
-  >
-    <span style={{
-      fontSize: '2.8rem',
-      fontWeight: 900,
-      color: isActive ? '#888888' : '#000',
-      fontFamily: 'Cairo, sans-serif',
-      lineHeight: 1,
-      transition: 'color 0.3s ease',
-    }}>
-      {value}
-    </span>
-    <span style={{
-      fontSize: '0.85rem',
-      color: isActive ? '#888888' : '#666',
-      marginTop: '10px',
-      fontWeight: 400,
-      transition: 'color 0.3s ease',
-    }}>
-      {label}
-    </span>
-  </div>
-);
+const useCountUp = (target, duration = 1800, shouldStart = false) => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!shouldStart) return;
+    const numericTarget = parseInt(target.replace(/\D/g, ''), 10);
+    if (!numericTarget) return;
+    let start = 0;
+    const step = numericTarget / (duration / 16);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= numericTarget) {
+        setCount(numericTarget);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [shouldStart, target, duration]);
+  return count;
+};
+
+const StatCard = ({ value, label }) => {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  const prefix = value.startsWith('+') ? '+' : '';
+  const isYear = value.includes('٢٠٢٣') || value.includes('2023');
+  const count = useCountUp(value, 1800, visible && !isYear);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.5 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const displayValue = isYear ? value : visible ? `${prefix}${count}` : '0';
+
+  return (
+    <div
+      ref={ref}
+      data-aos="fade-up"
+      style={{
+        width: '180px',
+        height: '180px',
+        border: '1px solid #e0e0e0',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: '12px',
+        transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
+        backgroundColor: '#fff',
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.borderColor = '#888';
+        e.currentTarget.style.backgroundColor = '#f8f8f8';
+        e.currentTarget.style.transform = 'translateY(-8px)';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.borderColor = '#e0e0e0';
+        e.currentTarget.style.backgroundColor = '#fff';
+        e.currentTarget.style.transform = 'translateY(0)';
+      }}
+    >
+      <span style={{
+        fontSize: '2.8rem',
+        fontWeight: 900,
+        color: '#000',
+        fontFamily: 'Cairo, sans-serif',
+        lineHeight: 1,
+      }}>
+        {displayValue}
+      </span>
+      <span style={{
+        fontSize: '0.85rem',
+        color: '#666',
+        marginTop: '10px',
+        fontWeight: 400,
+      }}>
+        {label}
+      </span>
+    </div>
+  );
+};
 
 const AboutSection = memo(() => {
   const { t, language } = useLanguage();
-  const [activeStats, setActiveStats] = useState({});
-
-  const handleStatClick = (index) => {
-    setActiveStats(prev => ({ ...prev, [index]: true }));
-    setTimeout(() => {
-      setActiveStats(prev => ({ ...prev, [index]: false }));
-    }, 800);
-  };
 
   const stats = [
     { value: '٢٠٢٣', label: language === 'ar' ? 'سنة التأسيس' : 'Founded' },
@@ -86,6 +127,21 @@ const AboutSection = memo(() => {
 
   return (
     <section id="about" style={{ backgroundColor: '#fff', padding: '96px 0' }}>
+      <style>{`
+        .clients-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        @media (min-width: 640px) {
+          .clients-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+        @media (min-width: 1024px) {
+          .clients-grid {
+            grid-template-columns: repeat(5, 1fr);
+          }
+        }
+      `}</style>
       <div className="container mx-auto px-6">
 
         <div style={{ textAlign: 'center', marginBottom: '64px' }} data-aos="fade-up">
@@ -106,35 +162,67 @@ const AboutSection = memo(() => {
         {/* Stats */}
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '16px' }}>
           {stats.map((s, i) => (
-            <StatCard
-              key={i}
-              value={s.value}
-              label={s.label}
-              isActive={activeStats[i]}
-              onClick={() => handleStatClick(i)}
-            />
+            <StatCard key={i} value={s.value} label={s.label} />
           ))}
         </div>
 
-        {/* Clients Marquee — below stats */}
-        <div style={{ borderTop: '1px solid #e8e8e8', borderBottom: '1px solid #e8e8e8', padding: '24px 0', marginBottom: '80px' }}>
-          <p style={{
-            textAlign: 'center',
-            fontFamily: 'Cairo, sans-serif',
-            fontSize: '0.7rem',
-            fontWeight: 600,
-            letterSpacing: '0.2em',
-            color: '#aaa',
-            marginBottom: '18px',
-            textTransform: 'uppercase',
-          }}>
+        {/* Clients Grid */}
+        <div style={{
+          borderTop: '1px solid #e8e8e8',
+          borderBottom: '1px solid #e8e8e8',
+          padding: '80px 0',
+          marginBottom: '80px',
+          backgroundColor: '#fff',
+        }}>
+          <h2
+            data-aos="fade-up"
+            style={{
+              textAlign: 'center',
+              fontFamily: 'Cairo, sans-serif',
+              fontSize: '36px',
+              fontWeight: 700,
+              color: '#000',
+              marginBottom: '50px',
+            }}
+          >
             {language === 'ar' ? 'أبرز عملاؤنا' : 'Our Clients'}
-          </p>
-          <Marquee speed={40} gradient={false} pauseOnHover={true}>
+          </h2>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '40px',
+          }}
+            className="clients-grid"
+          >
             {CLIENT_LOGOS.map((logo, i) => (
-              <img key={i} src={logo.src} alt={logo.alt} className="client-logo" />
+              <div
+                key={i}
+                data-aos="fade-up"
+                data-aos-delay={i * 100}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '16px',
+                }}
+              >
+                <img
+                  src={logo.src}
+                  alt={logo.alt}
+                  style={{
+                    height: '100px',
+                    width: 'auto',
+                    maxWidth: '100%',
+                    objectFit: 'contain',
+                    display: 'block',
+                    transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1)',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+                />
+              </div>
             ))}
-          </Marquee>
+          </div>
         </div>
 
         {/* Vision */}

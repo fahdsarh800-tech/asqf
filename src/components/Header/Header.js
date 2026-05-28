@@ -76,13 +76,18 @@ const Header = () => {
       <div className="container mx-auto px-6">
         <div className="flex justify-between items-center">
           <Link to="/" className={`flex items-center gap-3 ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
-            <div style={{ width: '60px', height: '60px' }}>
-              <img
-                src='images/clients/logo.png'
-                alt='ASQF'
-                style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
-              />
-            </div>
+            <img
+              src='images/clients/logo.png'
+              alt='ASQF'
+              style={{
+                height: 'clamp(75px, 8vw, 100px)',
+                maxHeight: 'none',
+                width: 'auto',
+                objectFit: 'contain',
+                filter: 'brightness(0) invert(1)',
+                display: 'block',
+              }}
+            />
           </Link>
 
           <div className="hidden lg:flex items-center">

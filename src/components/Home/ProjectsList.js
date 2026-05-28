@@ -1,129 +1,91 @@
 import React, { memo, useEffect, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 
-const ProjectCard = memo(({ project }) => {
-  return (
-    <div className="project-card-wrapper group">
-      <div className="project-card cursor-pointer overflow-hidden">
-        <div className="project-image-layer">
-          <img
-            src={project.image}
-            alt={project.title}
-            loading="lazy"
-          />
-        </div>
-
-        <div className="project-info-overlay">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-12 h-1 bg-accent"></div>
-              <span className="text-accent font-medium text-lg">{project.category}</span>
-            </div>
-            <h3 className="text-white text-2xl font-bold mb-1">{project.title}</h3>
-            <p className="text-gray-300 text-lg mb-1">{project.description}</p>
-            <div className="flex flex-wrap gap-3 mb-1">
-              {project.tags.map((tag, index) => (
-                <span key={index} className="px-4 py-2 bg-white/10 backdrop-blur-sm text-white text-sm">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="absolute top-6 left-6 z-30">
-          <div className="flex flex-col gap-2">
-            <div
-              className="w-16 h-16 bg-white/20 backdrop-blur-sm flex items-center justify-center"
-              style={{ clipPath: project.iconClipPath }}
-            >
-              <i className={`fas ${project.icon} text-white text-2xl`}></i>
-            </div>
-            <div className="px-4 py-2 bg-white/10 backdrop-blur-sm">
-              <span className="text-white font-medium">{project.projectName}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-});
-
-ProjectCard.displayName = 'ProjectCard';
+const PROJECTS = [
+  {
+    image: 'images/Qatar Museum Project.webp',
+    title: 'مشروع متحف قطر',
+    titleEn: 'Qatar Museum Project',
+    category: 'متحف',
+    categoryEn: 'Museum',
+  },
+  {
+    image: 'images/Noor Riyadh Festival.webp',
+    title: 'مهرجان نور الرياض',
+    titleEn: 'Noor Riyadh Festival',
+    category: 'مهرجان',
+    categoryEn: 'Festival',
+  },
+  {
+    image: 'images/Nabil Fanous Exhibition.webp',
+    title: 'معرض نابيل فانوس',
+    titleEn: 'Nabil Fanous Exhibition',
+    category: 'معرض',
+    categoryEn: 'Exhibition',
+  },
+  {
+    image: 'images/Unfolding The Embassy.webp',
+    title: 'مشروع السفارة',
+    titleEn: 'Unfolding The Embassy',
+    category: 'مشاريع ثقافية',
+    categoryEn: 'Cultural',
+  },
+  {
+    image: 'images/The Comma.webp',
+    title: 'مشروع الفاصلة',
+    titleEn: 'The Comma',
+    category: 'تركيبات فنية',
+    categoryEn: 'Art Installation',
+  },
+  {
+    image: 'images/Ceramic Exhibition.webp',
+    title: 'معرض السيراميك',
+    titleEn: 'Ceramic Exhibition',
+    category: 'معرض',
+    categoryEn: 'Exhibition',
+  },
+];
 
 const ProjectsList = memo(() => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const swiperRef = useRef(null);
 
-  const mainProjects = [
-    {
-      title: t('displayCases'),
-      category: t('museum'),
-      description: t('displayCasesDesc'),
-      image: 'images/Qatar Museum Project.webp',
-      tags: [
-        t('interiorDesign'),
-        language === 'ar' ? 'تصميم وتنفيذ ' : 'designing and executing',
-        language === 'ar' ? 'واجهات عرض فنية ' : 'art display cases '
-      ],
-      icon: 'fa-landmark',
-      iconClipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
-      projectName: language === 'ar' ? 'مشروع متحف قطر' : 'Qatar Museum Project'
-    },
-    {
-      title: t('fifthPyramid'),
-      category: t('festival'),
-      description: t('fifthPyramidDesc'),
-      image: 'images/Noor Riyadh Festival.webp',
-      tags: [
-        language === 'ar' ? 'تركيبات فنية' : 'Art Installations',
-        language === 'ar' ? 'إضاءة تفاعلية' : 'Interactive Lighting',
-        t('architecturalEngineering')
-      ],
-      icon: 'fa-lightbulb',
-      iconClipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
-      projectName: language === 'ar' ? 'مهرجان نور الرياض' : 'Noor Riyadh Festival'
-    },
-    {
-      title: t('heritageTransformation'),
-      category: t('exhibition'),
-      description: t('heritageTransformationDesc'),
-      image: 'images/Nabil Fanous Exhibition.webp',
-      tags: [
-        language === 'ar' ? 'ترميم' : 'Restoration',
-        t('interiorDesign'),
-        language === 'ar' ? 'تكييف بيئي' : 'Environmental Adaptation'
-      ],
-      icon: 'fa-palette',
-      iconClipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
-      projectName: language === 'ar' ? 'معرض نابيل فانوس' : 'Nabil Fanous Exhibition'
-    }
-  ];
-
   useEffect(() => {
-    if (window.Swiper && !swiperRef.current) {
+    const init = () => {
+      if (!window.Swiper) return;
+      if (swiperRef.current) {
+        swiperRef.current.destroy(true, true);
+        swiperRef.current = null;
+      }
       swiperRef.current = new window.Swiper('.projectsSwiper', {
         slidesPerView: 1,
-        spaceBetween: 30,
+        spaceBetween: 24,
         loop: true,
+        speed: 700,
+        autoplay: { delay: 4000, disableOnInteraction: false },
+        navigation: {
+          nextEl: '.projects-swiper-next',
+          prevEl: '.projects-swiper-prev',
+        },
         pagination: {
           el: '.projects-swiper-pagination',
           clickable: true,
           dynamicBullets: true,
         },
-        navigation: {
-          nextEl: '.projects-swiper-next',
-          prevEl: '.projects-swiper-prev',
-        },
         breakpoints: {
-          640: { slidesPerView: 2, spaceBetween: 20 },
-          1024: { slidesPerView: 3, spaceBetween: 30 },
-        },
-        autoplay: {
-          delay: 4000,
-          disableOnInteraction: false,
+          768: { slidesPerView: 2, spaceBetween: 24 },
+          1024: { slidesPerView: 3, spaceBetween: 28 },
         },
       });
+    };
+
+    if (window.Swiper) {
+      init();
+    } else {
+      const interval = setInterval(() => {
+        if (window.Swiper) { clearInterval(interval); init(); }
+      }, 100);
+      return () => clearInterval(interval);
     }
 
     return () => {
@@ -136,19 +98,113 @@ const ProjectsList = memo(() => {
 
   return (
     <div className="relative" data-aos="fade-up" data-aos-duration="1000">
-      <div className="swiper projectsSwiper pb-14">
+      <style>{`
+        .project-slide-card {
+          position: relative;
+          overflow: hidden;
+          cursor: pointer;
+          height: 420px;
+        }
+        .project-slide-card img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+          display: block;
+        }
+        .project-slide-card:hover img {
+          transform: scale(1.08);
+        }
+        .project-slide-overlay {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+          padding: 32px 24px 24px;
+          transform: translateY(8px);
+          transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .project-slide-card:hover .project-slide-overlay {
+          transform: translateY(0);
+        }
+        .project-slide-category {
+          font-family: Cairo, sans-serif;
+          font-size: 0.75rem;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          color: rgba(255,255,255,0.7);
+          margin-bottom: 6px;
+          text-transform: uppercase;
+        }
+        .project-slide-title {
+          font-family: Cairo, sans-serif;
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #fff;
+          margin: 0;
+          line-height: 1.4;
+        }
+        .projects-swiper-prev,
+        .projects-swiper-next {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 10;
+          width: 48px;
+          height: 48px;
+          background: rgba(0,0,0,0.6);
+          border: 1px solid rgba(255,255,255,0.2);
+          color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: background 0.3s ease;
+          backdrop-filter: blur(4px);
+        }
+        .projects-swiper-prev:hover,
+        .projects-swiper-next:hover {
+          background: rgba(0,0,0,0.9);
+        }
+        .projects-swiper-prev { left: -24px; }
+        .projects-swiper-next { right: -24px; }
+        .projects-swiper-prev::after,
+        .projects-swiper-next::after { display: none !important; }
+        @media (max-width: 768px) {
+          .projects-swiper-prev { left: 0; }
+          .projects-swiper-next { right: 0; }
+          .project-slide-card { height: 300px; }
+        }
+      `}</style>
+
+      <div className="swiper projectsSwiper" style={{ paddingBottom: '56px', overflow: 'hidden' }}>
         <div className="swiper-wrapper">
-          {mainProjects.map((project, index) => (
-            <div className="swiper-slide" key={index}>
-              <ProjectCard project={project} />
+          {PROJECTS.map((p, i) => (
+            <div className="swiper-slide" key={i}>
+              <div className="project-slide-card">
+                <img src={p.image} alt={language === 'ar' ? p.title : p.titleEn} />
+                <div className="project-slide-overlay">
+                  <div className="project-slide-category">
+                    {language === 'ar' ? p.category : p.categoryEn}
+                  </div>
+                  <h3 className="project-slide-title">
+                    {language === 'ar' ? p.title : p.titleEn}
+                  </h3>
+                </div>
+              </div>
             </div>
           ))}
         </div>
-        <div className="swiper-pagination projects-swiper-pagination relative mt-10"></div>
+        <div className="swiper-pagination projects-swiper-pagination" style={{ marginTop: '24px' }}></div>
       </div>
 
-      <div className="projects-swiper-prev swiper-button-prev"></div>
-      <div className="projects-swiper-next swiper-button-next"></div>
+      <button className="projects-swiper-prev" aria-label="Previous">
+        <i className="fas fa-chevron-right"></i>
+      </button>
+      <button className="projects-swiper-next" aria-label="Next">
+        <i className="fas fa-chevron-left"></i>
+      </button>
     </div>
   );
 });
