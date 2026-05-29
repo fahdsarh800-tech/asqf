@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect, useRef } from 'react';
+import React, { memo } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 
 const CLIENT_LOGOS = [
@@ -18,116 +18,61 @@ const CLIENT_LOGOS = [
   { src: '/images/clients/middle-east.png', alt: 'ميدل بيست' },
 ];
 
-const useCountUp = (target, duration = 1800, shouldStart = false) => {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!shouldStart) return;
-    const numericTarget = parseInt(target.replace(/\D/g, ''), 10);
-    if (!numericTarget) return;
-    let start = 0;
-    const step = numericTarget / (duration / 16);
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= numericTarget) {
-        setCount(numericTarget);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [shouldStart, target, duration]);
-  return count;
-};
-
-const StatCard = ({ value, label }) => {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  const prefix = value.startsWith('+') ? '+' : '';
-  const isYear = value.includes('٢٠٢٣') || value.includes('2023');
-  const count = useCountUp(value, 1800, visible && !isYear);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold: 0.5 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  const displayValue = isYear ? value : visible ? `${prefix}${count}` : '0';
-
-  return (
-    <div
-      ref={ref}
-      data-aos="fade-up"
-      style={{
-        width: '180px',
-        height: '180px',
-        border: '1px solid #e0e0e0',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: '12px',
-        transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
-        backgroundColor: '#fff',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.borderColor = '#888';
-        e.currentTarget.style.backgroundColor = '#f8f8f8';
-        e.currentTarget.style.transform = 'translateY(-8px)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.borderColor = '#e0e0e0';
-        e.currentTarget.style.backgroundColor = '#fff';
-        e.currentTarget.style.transform = 'translateY(0)';
-      }}
-    >
-      <span style={{
-        fontSize: '2.8rem',
-        fontWeight: 900,
-        color: '#000',
-        fontFamily: 'Cairo, sans-serif',
-        lineHeight: 1,
-      }}>
-        {displayValue}
-      </span>
-      <span style={{
-        fontSize: '0.85rem',
-        color: '#666',
-        marginTop: '10px',
-        fontWeight: 400,
-      }}>
-        {label}
-      </span>
-    </div>
-  );
-};
+const STATS = [
+  { value: '+10',  ar: 'عضو فريق',              en: 'Team Members' },
+  { value: '2023', ar: 'تأسست عام',              en: 'Founded' },
+  { value: '+50',  ar: 'مشاريع مميزة',           en: 'Projects' },
+  { value: '+14',  ar: 'شريك وعميل مؤسسي',       en: 'Partners & Clients' },
+];
 
 const AboutSection = memo(() => {
   const { t, language } = useLanguage();
 
-  const stats = [
-    { value: '٢٠٢٣', label: language === 'ar' ? 'سنة التأسيس' : 'Founded' },
-    { value: '+٥٠', label: language === 'ar' ? 'مشروع منجز' : 'Projects' },
-    { value: '+١٤', label: language === 'ar' ? 'عميل مؤسسي' : 'Clients' },
-    { value: '٨', label: language === 'ar' ? 'متخصص إبداعي' : 'Specialists' },
-  ];
-
   const values = [
-    { key: 'leadership', desc: 'leadershipDesc' },
-    { key: 'precision', desc: 'precisionDesc' },
-    { key: 'sustainability', desc: 'sustainabilityDesc' },
-    { key: 'innovation', desc: 'innovationDesc' },
+    { key: 'leadership',    desc: 'leadershipDesc' },
+    { key: 'precision',     desc: 'precisionDesc' },
+    { key: 'sustainability',desc: 'sustainabilityDesc' },
+    { key: 'innovation',    desc: 'innovationDesc' },
   ];
 
   return (
     <section id="about" style={{ backgroundColor: '#fff', padding: '96px 0' }}>
       <style>{`
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 30px;
+          margin-bottom: 64px;
+        }
+        .stat-card {
+          border: 1px solid #e0e0e0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 32px 16px;
+          transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+          background-color: #fff;
+        }
+        .stat-card:hover {
+          border-color: #888;
+          background-color: #f8f8f8;
+          transform: translateY(-8px);
+        }
+        .stat-value {
+          font-size: 2.8rem;
+          font-weight: 900;
+          color: #000;
+          font-family: Cairo, sans-serif;
+          line-height: 1;
+        }
+        .stat-label {
+          font-size: 0.85rem;
+          color: #666;
+          margin-top: 10px;
+          font-weight: 400;
+          text-align: center;
+        }
         .clients-grid {
           grid-template-columns: repeat(2, 1fr);
         }
@@ -141,7 +86,20 @@ const AboutSection = memo(() => {
             grid-template-columns: repeat(5, 1fr);
           }
         }
+        @media (max-width: 768px) {
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+          }
+          .stat-card {
+            padding: 20px 12px;
+          }
+          .stat-value {
+            font-size: 2.25rem;
+          }
+        }
       `}</style>
+
       <div className="container mx-auto px-6">
 
         <div style={{ textAlign: 'center', marginBottom: '64px' }} data-aos="fade-up">
@@ -160,9 +118,12 @@ const AboutSection = memo(() => {
         </div>
 
         {/* Stats */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '16px' }}>
-          {stats.map((s, i) => (
-            <StatCard key={i} value={s.value} label={s.label} />
+        <div className="stats-grid">
+          {STATS.map((s, i) => (
+            <div key={i} className="stat-card" data-aos="fade-up" data-aos-delay={i * 100}>
+              <span className="stat-value">{s.value}</span>
+              <span className="stat-label">{language === 'ar' ? s.ar : s.en}</span>
+            </div>
           ))}
         </div>
 
@@ -187,12 +148,9 @@ const AboutSection = memo(() => {
           >
             {language === 'ar' ? 'أبرز عملاؤنا' : 'Our Clients'}
           </h2>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '40px',
-          }}
+          <div
             className="clients-grid"
+            style={{ display: 'grid', gap: '40px' }}
           >
             {CLIENT_LOGOS.map((logo, i) => (
               <div
@@ -252,10 +210,10 @@ const AboutSection = memo(() => {
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <div className={`timeline ${language === 'en' ? 'timeline-english' : ''}`}>
             {[
-              { title: 'timeline2023Start', desc: 'timeline2023StartDesc' },
-              { title: 'timeline2023Growth', desc: 'timeline2023GrowthDesc' },
+              { title: 'timeline2023Start',        desc: 'timeline2023StartDesc' },
+              { title: 'timeline2023Growth',       desc: 'timeline2023GrowthDesc' },
               { title: 'timeline2023Achievements', desc: 'timeline2023AchievementsDesc' },
-              { title: 'timeline2024Expansion', desc: 'timeline2024ExpansionDesc' },
+              { title: 'timeline2024Expansion',    desc: 'timeline2024ExpansionDesc' },
             ].map(({ title, desc }, i) => (
               <div className="timeline-item" key={i} data-aos="fade-up" data-aos-delay={i * 100}>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#000', marginBottom: '8px' }}>{t(title)}</h3>
