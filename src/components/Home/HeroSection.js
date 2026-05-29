@@ -3,9 +3,17 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 const HeroSection = memo(() => {
   const [offsetY, setOffsetY] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const rafRef = useRef(null);
 
   useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) return; // disable parallax on mobile
     const handleScroll = () => {
       if (rafRef.current) return;
       rafRef.current = requestAnimationFrame(() => {
@@ -18,61 +26,103 @@ const HeroSection = memo(() => {
       window.removeEventListener('scroll', handleScroll);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, []);
+  }, [isMobile]);
 
   return (
-    <section
-      id="home"
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: '100vh',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Parallax image */}
+    <section id="home" className="hero-section">
+      <style>{`
+        .hero-section {
+          position: relative;
+          width: 100%;
+          height: 100vh;
+          overflow: hidden;
+        }
+
+        .hero-image {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 115%;
+          object-fit: cover;
+          object-position: center center;
+        }
+
+        .hero-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.15) 0%,
+            rgba(0,0,0,0.55) 60%,
+            rgba(0,0,0,0.85) 100%
+          );
+          z-index: 1;
+        }
+
+        .hero-content {
+          position: absolute;
+          inset: 0;
+          z-index: 2;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-end;
+          text-align: center;
+          padding: 0 24px 10vh;
+        }
+
+        /* Tablet: 768px – 1024px */
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .hero-image {
+            object-position: center center;
+          }
+        }
+
+        /* Mobile: <= 768px */
+        @media (max-width: 768px) {
+          .hero-section {
+            height: 70vh;
+          }
+          .hero-image {
+            height: 100%;
+            object-position: 30% center;
+          }
+          .hero-overlay {
+            background: linear-gradient(
+              to bottom,
+              rgba(0,0,0,0.25) 0%,
+              rgba(0,0,0,0.60) 50%,
+              rgba(0,0,0,0.90) 100%
+            );
+          }
+          .hero-content {
+            padding: 0 20px 8vh;
+          }
+        }
+      `}</style>
+
+      {/* Image — parallax on desktop only via inline transform */}
       <img
         src="images/hero-main.jpg"
         alt="ASQF"
+        className="hero-image"
         onLoad={() => setLoaded(true)}
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '115%',
-          objectFit: 'cover',
-          objectPosition: 'center',
-          transform: `translateY(${offsetY * 0.35}px)`,
-          willChange: 'transform',
+          transform: isMobile ? 'none' : `translateY(${offsetY * 0.35}px)`,
+          willChange: isMobile ? 'auto' : 'transform',
           opacity: loaded ? 1 : 0,
           transition: 'opacity 0.8s ease',
         }}
       />
 
-      {/* Dark gradient overlay — transparent top → dark bottom */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.85) 100%)',
-          zIndex: 1,
-        }}
-      />
+      {/* Gradient overlay */}
+      <div className="hero-overlay" />
 
-      {/* Content */}
+      {/* Text content */}
       <div
+        className="hero-content"
         style={{
-          position: 'absolute',
-          inset: 0,
-          zIndex: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          paddingBottom: '10vh',
-          textAlign: 'center',
-          padding: '0 24px 10vh',
           opacity: loaded ? 1 : 0,
           transform: loaded ? 'translateY(0)' : 'translateY(30px)',
           transition: 'opacity 1s ease 0.3s, transform 1s ease 0.3s',
@@ -81,13 +131,13 @@ const HeroSection = memo(() => {
         <h1
           style={{
             fontFamily: 'Cairo, Almarai, sans-serif',
-            fontSize: 'clamp(1.8rem, 5vw, 4rem)',
+            fontSize: 'clamp(1.6rem, 5vw, 4rem)',
             fontWeight: 900,
             color: '#fff',
             lineHeight: 1.4,
             maxWidth: '860px',
             margin: '0 auto 32px',
-            textShadow: '0 2px 20px rgba(0,0,0,0.4)',
+            textShadow: '0 2px 20px rgba(0,0,0,0.5)',
           }}
         >
           نحن نبنى الفكرة لإنشاء سقف يستحق رؤيتك
