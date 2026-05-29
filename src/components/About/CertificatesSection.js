@@ -1,5 +1,4 @@
 import React, { memo } from 'react';
-import Marquee from 'react-fast-marquee';
 import { useLanguage } from '../../context/LanguageContext';
 
 const PARTNER_LOGOS = [
@@ -10,76 +9,40 @@ const PARTNER_LOGOS = [
   { src: '/images/partners/shashai.png', alt: 'شاشاي ستوديو' },
   { src: '/images/partners/mshmsh.png', alt: 'مشمش' },
   { src: '/images/partners/tamam.png', alt: 'تمام' },
-  // Duplicated to fill the marquee width
-  { src: '/images/partners/ratal.png', alt: 'رتل' },
-  { src: '/images/partners/doiqa.png', alt: 'دائقة' },
-  { src: '/images/partners/yasfer.png', alt: 'يسفر' },
-  { src: '/images/partners/comeanddo.png', alt: 'Come and Do' },
-  { src: '/images/partners/shashai.png', alt: 'شاشاي ستوديو' },
-  { src: '/images/partners/mshmsh.png', alt: 'مشمش' },
-  { src: '/images/partners/tamam.png', alt: 'تمام' },
 ];
 
-const PartnerLogo = ({ src, alt }) => (
-  <div
-    style={{
-      margin: '0 32px',
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      transition: 'all 0.35s ease',
-    }}
-    onMouseEnter={e => {
-      const img = e.currentTarget.querySelector('img');
-      if (img) {
-        img.style.filter = 'grayscale(0%)';
-        img.style.opacity = '1';
-        img.style.boxShadow = '0 6px 20px rgba(0,0,0,0.12)';
-        img.style.transform = 'scale(1.08)';
-      }
-    }}
-    onMouseLeave={e => {
-      const img = e.currentTarget.querySelector('img');
-      if (img) {
-        img.style.filter = 'grayscale(100%)';
-        img.style.opacity = '0.55';
-        img.style.boxShadow = 'none';
-        img.style.transform = 'scale(1)';
-      }
-    }}
-  >
-    <img
-      src={src}
-      alt={alt}
-      style={{
-        height: '80px',
-        width: 'auto',
-        maxWidth: '140px',
-        objectFit: 'contain',
-        filter: 'grayscale(100%)',
-        opacity: '0.55',
-        transition: 'all 0.35s ease',
-        display: 'block',
-      }}
-    />
-  </div>
-);
-
 const CertificatesSection = memo(() => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <section id="partners" style={{ backgroundColor: '#fff', padding: '80px 0' }}>
+      <style>{`
+        .partners-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        @media (min-width: 640px) {
+          .partners-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+        @media (min-width: 1024px) {
+          .partners-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+      `}</style>
+
       <div className="container mx-auto px-6">
-        <div style={{ textAlign: 'center', marginBottom: '48px' }} data-aos="fade-up">
+
+        <div style={{ textAlign: 'center', marginBottom: '50px' }} data-aos="fade-up">
           <h2 style={{
             fontFamily: 'Cairo, sans-serif',
-            fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
-            fontWeight: 900,
+            fontSize: '36px',
+            fontWeight: 700,
             color: '#000',
             marginBottom: '16px',
           }}>
-            {t('ourPartners')}
+            {language === 'ar' ? 'شركاؤنا في النجاح' : 'Our Partners'}
           </h2>
           <p style={{
             color: '#888',
@@ -93,19 +56,44 @@ const CertificatesSection = memo(() => {
           </p>
         </div>
 
-        <div
-          data-aos="fade-up"
-          style={{
-            borderTop: '1px solid #e8e8e8',
-            borderBottom: '1px solid #e8e8e8',
-            padding: '32px 0',
-          }}
-        >
-          <Marquee speed={40} gradient={false} pauseOnHover={true}>
+        <div style={{
+          borderTop: '1px solid #e8e8e8',
+          borderBottom: '1px solid #e8e8e8',
+          padding: '60px 0',
+        }}>
+          <div
+            className="partners-grid"
+            style={{ display: 'grid', gap: '40px' }}
+          >
             {PARTNER_LOGOS.map((logo, i) => (
-              <PartnerLogo key={i} src={logo.src} alt={logo.alt} />
+              <div
+                key={i}
+                data-aos="fade-up"
+                data-aos-delay={i * 100}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '16px',
+                }}
+              >
+                <img
+                  src={logo.src}
+                  alt={logo.alt}
+                  style={{
+                    height: '100px',
+                    width: 'auto',
+                    maxWidth: '100%',
+                    objectFit: 'contain',
+                    display: 'block',
+                    transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1)',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+                />
+              </div>
             ))}
-          </Marquee>
+          </div>
         </div>
 
         <div style={{ textAlign: 'center', marginTop: '48px' }} data-aos="fade-up">
@@ -121,7 +109,7 @@ const CertificatesSection = memo(() => {
               fontWeight: 600,
               borderBottom: '2px solid #888',
               paddingBottom: '4px',
-              transition: 'color 0.3s ease',
+              transition: 'color 0.4s cubic-bezier(0.4,0,0.2,1)',
             }}
             onMouseEnter={e => { e.currentTarget.style.color = '#888'; }}
             onMouseLeave={e => { e.currentTarget.style.color = '#000'; }}
@@ -129,6 +117,7 @@ const CertificatesSection = memo(() => {
             <i className="fas fa-handshake"></i> {t('beOurPartner')}
           </a>
         </div>
+
       </div>
     </section>
   );

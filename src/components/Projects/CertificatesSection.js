@@ -1,5 +1,4 @@
 import React, { memo } from 'react';
-import Marquee from 'react-fast-marquee';
 import { useLanguage } from '../../context/LanguageContext';
 
 const CLIENT_LOGOS = [
@@ -24,29 +23,86 @@ const CertificatesSection = memo(() => {
 
   return (
     <section id="clients" style={{ backgroundColor: '#fff', padding: '80px 0' }}>
+      <style>{`
+        .projects-clients-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        @media (min-width: 640px) {
+          .projects-clients-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+        @media (min-width: 1024px) {
+          .projects-clients-grid {
+            grid-template-columns: repeat(5, 1fr);
+          }
+        }
+      `}</style>
+
       <div className="container mx-auto px-6">
-        <div style={{ textAlign: 'center', marginBottom: '48px' }} data-aos="fade-up">
+
+        <div style={{ textAlign: 'center', marginBottom: '50px' }} data-aos="fade-up">
           <h2 style={{
             fontFamily: 'Cairo, sans-serif',
-            fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
-            fontWeight: 900,
+            fontSize: '36px',
+            fontWeight: 700,
             color: '#000',
             marginBottom: '16px',
           }}>
             {language === 'ar' ? 'أبرز عملاؤنا' : 'Our Clients'}
           </h2>
-          <p style={{ color: '#888', maxWidth: '600px', margin: '0 auto', fontSize: '1rem', lineHeight: 1.8, fontWeight: 300 }}>
+          <p style={{
+            color: '#888',
+            maxWidth: '600px',
+            margin: '0 auto',
+            fontSize: '1rem',
+            lineHeight: 1.8,
+            fontWeight: 300,
+          }}>
             {t('partnersDescription')}
           </p>
         </div>
 
-        <div style={{ borderTop: '1px solid #e8e8e8', borderBottom: '1px solid #e8e8e8', padding: '32px 0 20px' }} data-aos="fade-up">
-          <Marquee speed={40} gradient={false} pauseOnHover={true}>
+        <div style={{
+          borderTop: '1px solid #e8e8e8',
+          borderBottom: '1px solid #e8e8e8',
+          padding: '60px 0',
+        }}>
+          <div
+            className="projects-clients-grid"
+            style={{ display: 'grid', gap: '40px' }}
+          >
             {CLIENT_LOGOS.map((logo, i) => (
-              <img key={i} src={logo.src} alt={logo.alt} className="client-logo" />
+              <div
+                key={i}
+                data-aos="fade-up"
+                data-aos-delay={i * 100}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '16px',
+                }}
+              >
+                <img
+                  src={logo.src}
+                  alt={logo.alt}
+                  style={{
+                    height: '100px',
+                    width: 'auto',
+                    maxWidth: '100%',
+                    objectFit: 'contain',
+                    display: 'block',
+                    transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1)',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+                />
+              </div>
             ))}
-          </Marquee>
+          </div>
         </div>
+
       </div>
     </section>
   );
